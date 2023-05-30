@@ -62,9 +62,9 @@ class Player
 
 class Platform
 {
-	constructor()
+	constructor({x,y})
 	{
-		this.position = {x: 200, y: 800};
+		this.position = {x: x, y: y};
 		this.width = 60;
 		this.height = 10;
 		this.color = 'red';
@@ -78,10 +78,10 @@ class Platform
 
 }
 
-// Create a new player
+// Create a new player object
 const player = new Player();
-const platform = new Platform();
-
+//Create a new platform array object
+const platforms = [new Platform({x: 100, y: 200}), new Platform({x: 200, y: 300}), new Platform({x: 300, y: 400})];
 
 const keys = {
 	right: {pressed: false},
@@ -99,36 +99,50 @@ function animate()
 	// Clear the canvas
 	c.clearRect(0, 0, canvas.width, canvas.height);
 	
-
-	platform.draw();
-
-	if (player.position.y + player.height + player.velocity.y >= platform.position.y
-		&& player.position.y < platform.position.y
-		&& player.position.x + player.width >= platform.position.x
-		&& player.position.x <= platform.position.x + platform.width)
-		{
-			player.velocity.y = 0;
-			player.position.y = platform.position.y - player.height;
-		}
-	else
-		{
-			player.velocity.y += gravity;
-		}
+	platforms.forEach(platform =>
+	                  {
+		                  platform.draw();
+		                  if (player.position.y + player.height + player.velocity.y >= platform.position.y
+			                  && player.position.y < platform.position.y
+			                  && player.position.x + player.width >= platform.position.x
+			                  && player.position.x <= platform.position.x + platform.width)
+			                  {
+				                  player.velocity.y = 0;
+				                  player.position.y = platform.position.y - player.height;
+			                  }
+		                  else
+			                  {
+				                  player.velocity.y += gravity;
+			                  }
+	                  });
 	
 	// Update the player's state
 	player.update();
 	
-	if (keys.right.pressed)
+	if (keys.right.pressed && player.position.x < 400)
 		{
 			player.velocity.x = 5;
 		}
-	else if (keys.left.pressed)
+	else if (keys.left.pressed && player.position.x > 100)
 		{
 			player.velocity.x = -5;
 		}
 	else
 		{
 			player.velocity.x = 0;
+			if(keys.right.pressed){
+				platforms.forEach(platform =>
+				                  {
+					                  platform.position.x -= 5;
+				                  });
+			}
+			else if(keys.left.pressed){
+				platforms.forEach(platform =>
+				                  {
+					                  platform.position.x += 5;
+				                  });
+				
+			}
 		}
 
 }
@@ -139,10 +153,11 @@ animate();
 
 window.addEventListener('keydown', (event) =>
 {
+	let jumpHeight = -30;
 	switch (event.code)
 		{
 			case 'Space':
-				player.velocity.y = -20;
+				player.velocity.y = jumpHeight;
 				break;
 			case 'KeyD':
 				keys.right.pressed = true;
@@ -154,7 +169,7 @@ window.addEventListener('keydown', (event) =>
 				player.velocity.y = 10;
 				break;
 			case 'KeyW':
-				player.velocity.y = -20;
+				player.velocity.y = jumpHeight;
 				break;
 		}
 });
