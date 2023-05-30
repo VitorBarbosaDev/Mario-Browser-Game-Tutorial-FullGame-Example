@@ -38,10 +38,9 @@ class Player
 	update()
 	{
 		this.draw();
+		this.checkBounds();
 		this.position.y += this.velocity.y;
 		this.position.x += this.velocity.x;
-
-		this.checkBounds();
 	}
 
 	checkBounds()
@@ -65,9 +64,9 @@ class Platform
 {
 	constructor()
 	{
-		this.position = {x: 100, y: 100};
-		this.width = 30;
-		this.height = 30;
+		this.position = {x: 200, y: 800};
+		this.width = 60;
+		this.height = 10;
 		this.color = 'red';
 	}
 
@@ -82,6 +81,8 @@ class Platform
 // Create a new player
 const player = new Player();
 const platform = new Platform();
+
+
 const keys = {
 	right: {pressed: false},
 	left: {pressed: false},
@@ -97,9 +98,26 @@ function animate()
 	requestAnimationFrame(animate);
 	// Clear the canvas
 	c.clearRect(0, 0, canvas.width, canvas.height);
+	
+
+	platform.draw();
+
+	if (player.position.y + player.height + player.velocity.y >= platform.position.y
+		&& player.position.y < platform.position.y
+		&& player.position.x + player.width >= platform.position.x
+		&& player.position.x <= platform.position.x + platform.width)
+		{
+			player.velocity.y = 0;
+			player.position.y = platform.position.y - player.height;
+		}
+	else
+		{
+			player.velocity.y += gravity;
+		}
+	
 	// Update the player's state
 	player.update();
-
+	
 	if (keys.right.pressed)
 		{
 			player.velocity.x = 5;
@@ -112,6 +130,7 @@ function animate()
 		{
 			player.velocity.x = 0;
 		}
+
 }
 
 // Start the animation loop
@@ -123,7 +142,7 @@ window.addEventListener('keydown', (event) =>
 	switch (event.code)
 		{
 			case 'Space':
-				player.velocity.y = -10;
+				player.velocity.y = -20;
 				break;
 			case 'KeyD':
 				keys.right.pressed = true;
@@ -135,7 +154,7 @@ window.addEventListener('keydown', (event) =>
 				player.velocity.y = 10;
 				break;
 			case 'KeyW':
-				player.velocity.y = -10;
+				player.velocity.y = -20;
 				break;
 		}
 });
