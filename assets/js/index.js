@@ -15,8 +15,10 @@ console.log(c);
 const gravity = .5;
 
 // Define the Player class
-class Player {
-	constructor() {
+class Player
+{
+	constructor()
+	{
 		// Initialize the player's position, velocity, dimensions, and color
 		this.position = {x: 100, y: 100};
 		this.velocity = {x: 0, y: 0};
@@ -26,74 +28,126 @@ class Player {
 	}
 
 	// Define the draw method to draw the player on the canvas
-	draw() {
+	draw()
+	{
 		c.fillStyle = this.color;
 		c.fillRect(this.position.x, this.position.y, this.width, this.height);
 	}
 
 	// Define the update method to update the player's position and velocity
-	update() {
+	update()
+	{
 		this.draw();
 		this.position.y += this.velocity.y;
-		this.position.x += this.velocity.x; 
-		
-		this.checkBounds()
+		this.position.x += this.velocity.x;
+
+		this.checkBounds();
 	}
-	
-	checkBounds(){
-		
+
+	checkBounds()
+	{
 
 		// If the player is not at the bottom of the canvas, apply gravity
-		if (this.position.y + this.height + this.velocity.y <= canvas.height) {
-			this.velocity.y += gravity;
-		}
+		if (this.position.y + this.height + this.velocity.y <= canvas.height)
+			{
+				this.velocity.y += gravity;
+			}
 		// If the player is at the bottom of the canvas, set the vertical velocity to 0
-		else {
-			this.velocity.y = 0;
-		}
-	
+		else
+			{
+				this.velocity.y = 0;
+			}
+
 	}
+}
+
+class Platform
+{
+	constructor()
+	{
+		this.position = {x: 100, y: 100};
+		this.width = 30;
+		this.height = 30;
+		this.color = 'red';
+	}
+
+	draw()
+	{
+		c.fillStyle = this.color;
+		c.fillRect(this.position.x, this.position.y, this.width, this.height);
+	}
+
 }
 
 // Create a new player
 const player = new Player();
+const platform = new Platform();
+const keys = {
+	right: {pressed: false},
+	left: {pressed: false},
+};
 
 // Update the player's state
 player.update();
 
 // Define the animate function to update the game state and redraw the canvas
-function animate() {
+function animate()
+{
 	// Request the next animation frame
 	requestAnimationFrame(animate);
 	// Clear the canvas
 	c.clearRect(0, 0, canvas.width, canvas.height);
 	// Update the player's state
 	player.update();
+
+	if (keys.right.pressed)
+		{
+			player.velocity.x = 5;
+		}
+	else if (keys.left.pressed)
+		{
+			player.velocity.x = -5;
+		}
+	else
+		{
+			player.velocity.x = 0;
+		}
 }
 
 // Start the animation loop
 animate();
 
 
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', (event) =>
+{
+	switch (event.code)
+		{
+			case 'Space':
+				player.velocity.y = -10;
+				break;
+			case 'KeyD':
+				keys.right.pressed = true;
+				break;
+			case 'KeyA':
+				keys.left.pressed = true;
+				break;
+			case 'KeyS':
+				player.velocity.y = 10;
+				break;
+			case 'KeyW':
+				player.velocity.y = -10;
+				break;
+		}
+});
 
-	
-	switch(event.code) {
-		case 'Space':
-	player.velocity.y = -10;
-	break;
-		case 'KeyD':
-	player.velocity.x = 10;
-	break;
-		case 'KeyA':
-	player.velocity.x = -10;
-	break;
-		case 'KeyS':
-	player.velocity.y = 10;
-	break;
-		case 'KeyW':
-	player.velocity.y = -10;
-			break;
-	}
-		
+window.addEventListener('keyup', (event) =>
+{
+	if (event.code === 'KeyD')
+		{
+			keys.right.pressed = false;
+		}
+	else if (event.code === 'KeyA')
+		{
+			keys.left.pressed = false;
+		}
 });
