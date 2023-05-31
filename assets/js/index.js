@@ -69,10 +69,11 @@ class Platform
 	constructor({x,y,image})
 	{
 		this.position = {x: x, y: y};
-		this.width = 60;
-		this.height = 10;
-		
 		this.image = image;
+		this.width = image.width;
+		this.height = image.height;
+		
+		
 	}
 
 	draw()
@@ -86,9 +87,9 @@ class Platform
 const player = new Player();
 //Create a new platform array object
 const platforms = [
-	new Platform({x: 100, y: 200, image: platformImage}),
-	new Platform({x: 200, y: 300, image: platformImage}),
-	new Platform({x: 300, y: 400, image: platformImage})
+	new Platform({x: -1, y: 470, image: platformImage}),
+	new Platform({x: platformImage.width-2, y: 470, image: platformImage}),
+	new Platform({x: platformImage.width-2 *2, y: 470, image: platformImage})
 ];
 
 const keys = {
