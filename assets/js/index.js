@@ -11,6 +11,10 @@ canvas.height = window.innerHeight;
 // Log the context to the console for debugging
 console.log(c);
 
+let platformImage = new Image();
+platformImage.src = "../../assets/images/platform.png";
+
+console.log(platformImage);
 // Define the gravity constant for the game
 const gravity = .5;
 
@@ -62,18 +66,18 @@ class Player
 
 class Platform
 {
-	constructor({x,y})
+	constructor({x,y,image})
 	{
 		this.position = {x: x, y: y};
 		this.width = 60;
 		this.height = 10;
-		this.color = 'red';
+		
+		this.image = image;
 	}
 
 	draw()
 	{
-		c.fillStyle = this.color;
-		c.fillRect(this.position.x, this.position.y, this.width, this.height);
+		c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
 	}
 
 }
@@ -81,7 +85,11 @@ class Platform
 // Create a new player object
 const player = new Player();
 //Create a new platform array object
-const platforms = [new Platform({x: 100, y: 200}), new Platform({x: 200, y: 300}), new Platform({x: 300, y: 400})];
+const platforms = [
+	new Platform({x: 100, y: 200, image: platformImage}),
+	new Platform({x: 200, y: 300, image: platformImage}),
+	new Platform({x: 300, y: 400, image: platformImage})
+];
 
 const keys = {
 	right: {pressed: false},
@@ -90,6 +98,9 @@ const keys = {
 
 // Update the player's state
 player.update();
+
+
+let scrollOffset = 0;
 
 // Define the animate function to update the game state and redraw the canvas
 function animate()
@@ -131,12 +142,14 @@ function animate()
 		{
 			player.velocity.x = 0;
 			if(keys.right.pressed){
+				scrollOffset += 5;
 				platforms.forEach(platform =>
 				                  {
 					                  platform.position.x -= 5;
 				                  });
 			}
 			else if(keys.left.pressed){
+				scrollOffset -= 5;
 				platforms.forEach(platform =>
 				                  {
 					                  platform.position.x += 5;
@@ -144,11 +157,19 @@ function animate()
 				
 			}
 		}
+	
+	if(scrollOffset > 2000){
+		console.log("You win!");
+	}
 
 }
 
 // Start the animation loop
-animate();
+platformImage.onload = function ()
+	{
+		// Start the animation loop
+		animate();
+	};
 
 
 window.addEventListener('keydown', (event) =>
