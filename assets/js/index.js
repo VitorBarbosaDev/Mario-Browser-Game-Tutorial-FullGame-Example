@@ -12,7 +12,8 @@ canvas.height = window.innerHeight;
 console.log(c);
 
 let platformImage = new Image();
-platformImage.src = "/assets/images/platform.png";
+platformImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/platform.png";
+
 
 console.log(platformImage);
 // Define the gravity constant for the game
