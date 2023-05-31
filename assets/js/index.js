@@ -5,17 +5,16 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
 // Set the canvas width and height to match the window's inner width and height
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 1024;
+canvas.height = 576;
 
-// Log the context to the console for debugging
-console.log(c);
+
 
 let platformImage = new Image();
 platformImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/platform.png";
 
 
-console.log(platformImage);
+
 // Define the gravity constant for the game
 const gravity = .5;
 
@@ -108,8 +107,9 @@ function animate()
 {
 	// Request the next animation frame
 	requestAnimationFrame(animate);
-	// Clear the canvas
-	c.clearRect(0, 0, canvas.width, canvas.height);
+	// Clear the canvasd
+	c.fillStyle = 'white';
+	c.fillRect(0, 0, canvas.width, canvas.height);
 	
 	platforms.forEach(platform =>
 	                  {
