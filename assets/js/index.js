@@ -108,7 +108,7 @@ function animate()
 {
 	// Request the next animation frame
 	requestAnimationFrame(animate);
-	// Clear the canvasd
+	// Clear the canvas
 	c.fillStyle = 'white';
 	c.fillRect(0, 0, canvas.width, canvas.height);
 	
