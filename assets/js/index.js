@@ -18,6 +18,33 @@ hillsImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/hi
 let backgroundImage = new Image();
 backgroundImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/background.png";
 
+// Create an array of all your image assets
+let imageAssets = [platformImage, hillsImage, backgroundImage];
+
+// Create a promise for each image asset that resolves when the image loads
+let imagePromises = imageAssets.map(image =>
+                                    {
+	                                    return new Promise((resolve, reject) =>
+	                                                       {
+		                                                       image.onload  = resolve;
+		                                                       image.onerror = reject;
+	                                                       });
+                                    });
+
+// Wait for all the image assets to load before starting the game
+Promise.all(imagePromises)
+       .then(() =>
+             {
+	             // All images have loaded, start the game
+	             init();
+	             animate();
+             })
+       .catch(error =>
+              {
+	              // An error occurred while loading the images
+	              console.error("An error occurred while loading the images: ", error);
+              });
+
 
 // Define the gravity constant for the game
 const gravity = .5;
@@ -33,6 +60,7 @@ class Player
 		this.width    = 30;
 		this.height   = 30;
 		this.color    = 'red';
+		this.speed    = 10;
 	}
 	
 	// Define the draw method to draw the player on the canvas
@@ -60,10 +88,10 @@ class Player
 				this.velocity.y += gravity;
 			}
 		// If the player is at the bottom of the canvas, set the vertical velocity to 0
-		else
-			{
-				this.velocity.y = 0;
-			}
+		/*	else
+		 {
+		 this.velocity.y = 0;
+		 }*/
 		
 	}
 }
@@ -107,16 +135,39 @@ class GenericObject
 }
 
 
+function init()
+{
+
+
 // Create a new player object
-const player    = new Player();
+	player    = new Player();
 //Create a new platform array object
-const platforms = [
+	platforms = [
+		new Platform({x: -1, y: 470, image: platformImage}),
+		new Platform({x: platformImage.width - 3, y: 470, image: platformImage}),
+		new Platform({x: platformImage.width * 2 + 100, y: 470, image: platformImage}),
+	];
+	
+	genericObjects = [
+		new GenericObject({x: -1, y: -1, image: backgroundImage}),
+		new GenericObject({x: 5, y: -1, image: hillsImage}),
+		new GenericObject({x: 20, y: -1, image: hillsImage}),
+	];
+	
+	
+	scrollOffset = 0;
+}
+
+// Create a new player object
+let player    = new Player();
+//Create a new platform array object
+let platforms = [
 	new Platform({x: -1, y: 470, image: platformImage}),
-	new Platform({x: platformImage.width - 2, y: 470, image: platformImage}),
-	new Platform({x: platformImage.width - 2 * 2, y: 470, image: platformImage}),
+	new Platform({x: platformImage.width - 3, y: 470, image: platformImage}),
+	new Platform({x: platformImage.width * 2 + 100, y: 470, image: platformImage}),
 ];
 
-const genericObjects = [
+let genericObjects = [
 	new GenericObject({x: -1, y: -1, image: backgroundImage}),
 	new GenericObject({x: 5, y: -1, image: hillsImage}),
 	new GenericObject({x: 20, y: -1, image: hillsImage}),
@@ -132,6 +183,7 @@ player.update();
 
 
 let scrollOffset = 0;
+
 
 // Define the animate function to update the game state and redraw the canvas
 function animate()
@@ -169,21 +221,21 @@ function animate()
 	
 	if (keys.right.pressed && player.position.x < 400)
 		{
-			player.velocity.x = 5;
+			player.velocity.x = player.speed;
 		}
 	else if (keys.left.pressed && player.position.x > 100)
 		{
-			player.velocity.x = -5;
+			player.velocity.x = -player.speed;
 		}
 	else
 		{
 			player.velocity.x = 0;
 			if (keys.right.pressed)
 				{
-					scrollOffset += 5;
+					scrollOffset += player.speed;;
 					platforms.forEach(platform =>
 					                  {
-						                  platform.position.x -= 5;
+						                  platform.position.x -= player.speed;;
 					                  });
 					genericObjects.forEach(genericObject =>
 					                       {
@@ -192,10 +244,10 @@ function animate()
 				}
 			else if (keys.left.pressed)
 				{
-					scrollOffset -= 5;
+					scrollOffset -= player.speed;;
 					platforms.forEach(platform =>
 					                  {
-						                  platform.position.x += 5;
+						                  platform.position.x += player.speed;;
 					                  });
 					genericObjects.forEach(genericObject =>
 					                       {
@@ -204,19 +256,21 @@ function animate()
 				}
 		}
 	
+	
+	//Win Condition
 	if (scrollOffset > 2000)
 		{
 			console.log("You win!");
 		}
 	
+	//Lose Condition
+	if (player.position.y > canvas.height)
+		{
+			console.log("You Lose");
+			init();
+		}
+	
 }
-
-// Start the animation loop
-platformImage.onload = function ()
-	{
-		// Start the animation loop
-		animate();
-	};
 
 
 window.addEventListener('keydown', (event) =>
