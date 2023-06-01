@@ -8,7 +8,7 @@ const c = canvas.getContext('2d');
 canvas.width  = 1024;
 canvas.height = 576;
 
-
+//Import Assets
 let platformImage = new Image();
 platformImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/platform.png";
 
@@ -21,8 +21,18 @@ backgroundImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/imag
 let platformTall = new Image();
 platformTall.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/platformSmallTall.png";
 
+let spriteRunLeft = new Image();
+spriteRunLeft.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteRunLeft.png";
+let spriteRunRight = new Image();
+spriteRunRight.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteRunRight.png";
+let spriteStandRight = new Image();
+spriteStandRight.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteStandRight.png";
+let spriteStandLeft = new Image();
+spriteStandLeft.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteStandLeft.png";
+//Import Player
+
 // Create an array of all your image assets
-let imageAssets = [platformImage, hillsImage, backgroundImage, platformTall];
+let imageAssets = [platformImage, hillsImage, backgroundImage, platformTall, spriteRunLeft, spriteRunRight, spriteStandRight, spriteStandLeft];
 
 // Create a promise for each image asset that resolves when the image loads
 let imagePromises = imageAssets.map(image =>
@@ -127,8 +137,6 @@ class GenericObject
 		this.image    = image;
 		this.width    = image.width;
 		this.height   = image.height;
-		
-		
 	}
 	
 	draw()
@@ -231,7 +239,7 @@ function animate()
 		{
 			player.velocity.x = player.speed;
 		}
-	else if (keys.left.pressed && player.position.x > 100)
+	else if ((keys.left.pressed && player.position.x > 100) || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0))
 		{
 			player.velocity.x = -player.speed;
 		}
@@ -240,7 +248,7 @@ function animate()
 			player.velocity.x = 0;
 			if (keys.right.pressed)
 				{
-					scrollOffset += player.speed;;
+					scrollOffset += player.speed;
 					platforms.forEach(platform =>
 					                  {
 						                  platform.position.x -= player.speed;;
@@ -250,7 +258,7 @@ function animate()
 						                       genericObject.position.x -= 3;
 					                       });
 				}
-			else if (keys.left.pressed)
+			else if (keys.left.pressed && scrollOffset > 0)
 				{
 					scrollOffset -= player.speed;
 					platforms.forEach(platform =>
@@ -315,3 +323,4 @@ window.addEventListener('keyup', (event) =>
 			keys.left.pressed = false;
 		}
 });
+
