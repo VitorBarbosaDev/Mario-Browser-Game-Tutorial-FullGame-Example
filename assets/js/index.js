@@ -21,14 +21,14 @@ backgroundImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/imag
 let platformTall = new Image();
 platformTall.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/platformSmallTall.png";
 
-let spriteRunLeft = new Image();
-spriteRunLeft.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteRunLeft.png";
-let spriteRunRight = new Image();
-spriteRunRight.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteRunRight.png";
+let spriteRunLeft    = new Image();
+spriteRunLeft.src    = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteRunLeft.png";
+let spriteRunRight   = new Image();
+spriteRunRight.src   = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteRunRight.png";
 let spriteStandRight = new Image();
 spriteStandRight.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteStandRight.png";
-let spriteStandLeft = new Image();
-spriteStandLeft.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteStandLeft.png";
+let spriteStandLeft  = new Image();
+spriteStandLeft.src  = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/spriteStandLeft.png";
 //Import Player
 
 // Create an array of all your image assets
@@ -59,6 +59,8 @@ Promise.all(imagePromises)
               });
 
 
+let lastKey;
+
 // Define the gravity constant for the game
 const gravity = .5;
 
@@ -68,25 +70,45 @@ class Player
 	constructor()
 	{
 		// Initialize the player's position, velocity, dimensions, and color
-		this.position = {x: 100, y: 100};
-		this.velocity = {x: 0, y: 0};
-		this.width    = 30;
-		this.height   = 30;
-		this.color    = 'red';
-		this.speed    = 10;
+		this.position   = {x: 100, y: 100};
+		this.velocity   = {x: 0, y: 0};
+		this.width      = 33;
+		this.height     = 75;
+		this.color      = 'red';
+		this.speed      = 10;
 		this.jumpHeight = -40;
-	}
+		this.image      = spriteStandRight;
+		this.frames     = 0;
+		this.sprites    = 
+			{
+			stand: {right: spriteStandRight, left: spriteStandLeft,cropWidth:177,width:33},
+				run:{right: spriteRunRight, left: spriteRunLeft,cropWidth:341, width: 63.9375},
+			}
+		this.currentSprite = this.sprites.stand.right;
+		this.currentCropWidth = 177;
+	};
+	
 	
 	// Define the draw method to draw the player on the canvas
 	draw()
 	{
-		c.fillStyle = this.color;
-		c.fillRect(this.position.x, this.position.y, this.width, this.height);
+		/*	c.fillStyle = this.color;
+		 c.fillRect(this.position.x, this.position.y, this.width, this.height);*/
+		c.drawImage(this.currentSprite, this.currentCropWidth * this.frames, 0, this.currentCropWidth, 400, this.position.x, this.position.y, this.width, this.height);
 	}
 	
 	// Define the update method to update the player's position and velocity
 	update()
 	{
+		this.frames++;
+		if (this.frames > 59 && (this.currentSprite === this.sprites.stand.right || this.currentSprite === this.sprites.stand.left))
+			{
+				this.frames = 0;
+			}
+		else if(this.frames > 29 && (this.currentSprite === this.sprites.run.right || this.currentSprite === this.sprites.run.left) )
+		{
+			this.frames = 0;
+		}
 		this.draw();
 		this.checkBounds();
 		this.position.y += this.velocity.y;
@@ -158,12 +180,20 @@ function init()
 		new Platform({x: -1, y: 470, image: platformImage}),
 		new Platform({x: platformImage.width - 3, y: 470, image: platformImage}),
 		new Platform({x: platformImage.width * 2 + 100, y: 470, image: platformImage}),
-		new Platform({x: platformImage.width * 4 + 300 + platformImage.width-platformTall.width, y: 470 - 200, image: platformTall}),
-		new Platform({x: platformImage.width * 4 + 200 + platformImage.width-platformTall.width , y: 470 - 100, image: platformTall}),
+		new Platform({
+			             x: platformImage.width * 4 + 300 + platformImage.width - platformTall.width,
+			             y: 470 - 200,
+			             image: platformTall,
+		             }),
+		new Platform({
+			             x: platformImage.width * 4 + 200 + platformImage.width - platformTall.width,
+			             y: 470 - 100,
+			             image: platformTall,
+		             }),
 		new Platform({x: platformImage.width * 3 + 300, y: 470, image: platformImage}),
-		new Platform({x: platformImage.width * 4 +300-2, y: 470, image: platformImage}),
-		new Platform({x: platformImage.width * 5 +560, y: 470, image: platformImage}),
-		
+		new Platform({x: platformImage.width * 4 + 300 - 2, y: 470, image: platformImage}),
+		new Platform({x: platformImage.width * 5 + 560, y: 470, image: platformImage}),
+	
 	];
 	
 	genericObjects = [
@@ -181,13 +211,9 @@ function init()
 // Create a new player object
 let player    = new Player();
 //Create a new platform array object
-let platforms = [
+let platforms = [];
 
-];
-
-let genericObjects = [
-	
-];
+let genericObjects = [];
 
 const keys = {
 	right: {pressed: false},
@@ -251,7 +277,8 @@ function animate()
 					scrollOffset += player.speed;
 					platforms.forEach(platform =>
 					                  {
-						                  platform.position.x -= player.speed;;
+						                  platform.position.x -= player.speed;
+						                  ;
 					                  });
 					genericObjects.forEach(genericObject =>
 					                       {
@@ -263,7 +290,8 @@ function animate()
 					scrollOffset -= player.speed;
 					platforms.forEach(platform =>
 					                  {
-						                  platform.position.x += player.speed;;
+						                  platform.position.x += player.speed;
+						                  ;
 					                  });
 					genericObjects.forEach(genericObject =>
 					                       {
@@ -273,8 +301,38 @@ function animate()
 		}
 	
 	
+	if(keys.right.pressed && lastKey === 'right' && player.currentSprite !== player.sprites.run.right)
+		{
+			player.frames = 1;
+			player.currentSprite    = player.sprites.run.right;
+			player.currentCropWidth = player.sprites.run.cropWidth;
+			player.width            = player.sprites.run.width;
+		}
+	else if(keys.left.pressed && lastKey === 'left' && player.currentSprite !== player.sprites.run.left)
+		{
+			player.frames = 1;
+			player.currentSprite    = player.sprites.run.left;
+			player.currentCropWidth = player.sprites.run.cropWidth;
+			player.width            = player.sprites.run.width;
+		}
+	else if(!keys.left.pressed && lastKey === 'left' && player.currentSprite !== player.sprites.stand.left)
+		{
+			player.frames = 1;
+			player.currentSprite    = player.sprites.stand.left;
+			player.currentCropWidth = player.sprites.stand.cropWidth;
+			player.width            = player.sprites.stand.width;
+		}	else if(!keys.right.pressed && lastKey === 'right' && player.currentSprite !== player.sprites.stand.right)
+		{
+			player.frames = 1;
+			player.currentSprite    = player.sprites.stand.right;
+			player.currentCropWidth = player.sprites.stand.cropWidth;
+			player.width            = player.sprites.stand.width;
+		}
+	
+	
+	
 	//Win Condition
-	if (scrollOffset > platformImage.width * 5 + 560-50)
+	if (scrollOffset > platformImage.width * 5 + 560 - 50)
 		{
 			console.log("You win!");
 		}
@@ -299,9 +357,11 @@ window.addEventListener('keydown', (event) =>
 				break;
 			case 'KeyD':
 				keys.right.pressed = true;
+				lastKey = 'right';
 				break;
 			case 'KeyA':
 				keys.left.pressed = true;
+				lastKey = 'left';
 				break;
 			case 'KeyS':
 				player.velocity.y = 10;
