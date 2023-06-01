@@ -18,8 +18,11 @@ hillsImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/hi
 let backgroundImage = new Image();
 backgroundImage.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/background.png";
 
+let platformTall = new Image();
+platformTall.src = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/images/platformSmallTall.png";
+
 // Create an array of all your image assets
-let imageAssets = [platformImage, hillsImage, backgroundImage];
+let imageAssets = [platformImage, hillsImage, backgroundImage, platformTall];
 
 // Create a promise for each image asset that resolves when the image loads
 let imagePromises = imageAssets.map(image =>
@@ -61,6 +64,7 @@ class Player
 		this.height   = 30;
 		this.color    = 'red';
 		this.speed    = 10;
+		this.jumpHeight = -40;
 	}
 	
 	// Define the draw method to draw the player on the canvas
@@ -146,12 +150,20 @@ function init()
 		new Platform({x: -1, y: 470, image: platformImage}),
 		new Platform({x: platformImage.width - 3, y: 470, image: platformImage}),
 		new Platform({x: platformImage.width * 2 + 100, y: 470, image: platformImage}),
+		new Platform({x: platformImage.width * 4 + 300 + platformImage.width-platformTall.width, y: 470 - 200, image: platformTall}),
+		new Platform({x: platformImage.width * 4 + 200 + platformImage.width-platformTall.width , y: 470 - 100, image: platformTall}),
+		new Platform({x: platformImage.width * 3 + 300, y: 470, image: platformImage}),
+		new Platform({x: platformImage.width * 4 +300-2, y: 470, image: platformImage}),
+		new Platform({x: platformImage.width * 5 +560, y: 470, image: platformImage}),
+		
 	];
 	
 	genericObjects = [
+		//Background
 		new GenericObject({x: -1, y: -1, image: backgroundImage}),
-		new GenericObject({x: 5, y: -1, image: hillsImage}),
+		//Hills
 		new GenericObject({x: 20, y: -1, image: hillsImage}),
+		new GenericObject({x: 500 * 2, y: -1, image: hillsImage}),
 	];
 	
 	
@@ -162,15 +174,11 @@ function init()
 let player    = new Player();
 //Create a new platform array object
 let platforms = [
-	new Platform({x: -1, y: 470, image: platformImage}),
-	new Platform({x: platformImage.width - 3, y: 470, image: platformImage}),
-	new Platform({x: platformImage.width * 2 + 100, y: 470, image: platformImage}),
+
 ];
 
 let genericObjects = [
-	new GenericObject({x: -1, y: -1, image: backgroundImage}),
-	new GenericObject({x: 5, y: -1, image: hillsImage}),
-	new GenericObject({x: 20, y: -1, image: hillsImage}),
+	
 ];
 
 const keys = {
@@ -244,7 +252,7 @@ function animate()
 				}
 			else if (keys.left.pressed)
 				{
-					scrollOffset -= player.speed;;
+					scrollOffset -= player.speed;
 					platforms.forEach(platform =>
 					                  {
 						                  platform.position.x += player.speed;;
@@ -258,7 +266,7 @@ function animate()
 	
 	
 	//Win Condition
-	if (scrollOffset > 2000)
+	if (scrollOffset > platformImage.width * 5 + 560-50)
 		{
 			console.log("You win!");
 		}
@@ -275,11 +283,11 @@ function animate()
 
 window.addEventListener('keydown', (event) =>
 {
-	let jumpHeight = -30;
+	
 	switch (event.code)
 		{
 			case 'Space':
-				player.velocity.y = jumpHeight;
+				player.velocity.y = player.jumpHeight;
 				break;
 			case 'KeyD':
 				keys.right.pressed = true;
@@ -291,7 +299,7 @@ window.addEventListener('keydown', (event) =>
 				player.velocity.y = 10;
 				break;
 			case 'KeyW':
-				player.velocity.y = jumpHeight;
+				player.velocity.y = player.jumpHeight;
 				break;
 		}
 });
