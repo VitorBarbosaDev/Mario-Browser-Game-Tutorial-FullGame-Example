@@ -79,6 +79,7 @@ class Player
 		this.jumpHeight = -40;
 		this.image      = spriteStandRight;
 		this.frames     = 0;
+		this.alive = true;
 		this.sprites    = 
 			{
 			stand: {right: spriteStandRight, left: spriteStandLeft,cropWidth:177,width:33},
@@ -101,14 +102,10 @@ class Player
 	update()
 	{
 		this.frames++;
-		if (this.frames > 59 && (this.currentSprite === this.sprites.stand.right || this.currentSprite === this.sprites.stand.left))
+		if (this.frames > 59 && (this.currentSprite === this.sprites.stand.right || this.currentSprite === this.sprites.stand.left) || this.frames > 29 && (this.currentSprite === this.sprites.run.right || this.currentSprite === this.sprites.run.left))
 			{
 				this.frames = 0;
 			}
-		else if(this.frames > 29 && (this.currentSprite === this.sprites.run.right || this.currentSprite === this.sprites.run.left) )
-		{
-			this.frames = 0;
-		}
 		this.draw();
 		this.checkBounds();
 		this.position.y += this.velocity.y;
@@ -215,6 +212,8 @@ let platforms = [];
 
 let genericObjects = [];
 
+
+
 const keys = {
 	right: {pressed: false},
 	left: {pressed: false},
@@ -235,6 +234,9 @@ function animate()
 	// Clear the canvas
 	c.fillStyle = 'white';
 	c.fillRect(0, 0, canvas.width, canvas.height);
+	
+	
+	
 	
 	genericObjects.forEach(genericObject =>
 	                       {
@@ -261,87 +263,101 @@ function animate()
 	// Update the player's state
 	player.update();
 	
-	if (keys.right.pressed && player.position.x < 400)
+	if(player.alive)
 		{
-			player.velocity.x = player.speed;
-		}
-	else if ((keys.left.pressed && player.position.x > 100) || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0))
-		{
-			player.velocity.x = -player.speed;
-		}
-	else
-		{
-			player.velocity.x = 0;
-			if (keys.right.pressed)
+			if (keys.right.pressed && player.position.x < 400)
 				{
-					scrollOffset += player.speed;
-					platforms.forEach(platform =>
-					                  {
-						                  platform.position.x -= player.speed;
-						                  ;
-					                  });
-					genericObjects.forEach(genericObject =>
-					                       {
-						                       genericObject.position.x -= 3;
-					                       });
+					player.velocity.x = player.speed;
 				}
-			else if (keys.left.pressed && scrollOffset > 0)
+			else if ((keys.left.pressed && player.position.x > 100) || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0))
 				{
-					scrollOffset -= player.speed;
-					platforms.forEach(platform =>
-					                  {
-						                  platform.position.x += player.speed;
-						                  ;
-					                  });
-					genericObjects.forEach(genericObject =>
-					                       {
-						                       genericObject.position.x += 3;
-					                       });
+					player.velocity.x = -player.speed;
+				}
+			else
+				{
+					player.velocity.x = 0;
+					if (keys.right.pressed)
+						{
+							scrollOffset += player.speed;
+							platforms.forEach(platform =>
+							                  {
+								                  platform.position.x -= player.speed;
+								                  ;
+							                  });
+							genericObjects.forEach(genericObject =>
+							                       {
+								                       genericObject.position.x -= 3;
+							                       });
+						}
+					else if (keys.left.pressed && scrollOffset > 0)
+						{
+							scrollOffset -= player.speed;
+							platforms.forEach(platform =>
+							                  {
+								                  platform.position.x += player.speed;
+								                  ;
+							                  });
+							genericObjects.forEach(genericObject =>
+							                       {
+								                       genericObject.position.x += 3;
+							                       });
+						}
+				}
+			
+			
+			if (keys.right.pressed && lastKey === 'right' && player.currentSprite !== player.sprites.run.right)
+				{
+					player.frames           = 1;
+					player.currentSprite    = player.sprites.run.right;
+					player.currentCropWidth = player.sprites.run.cropWidth;
+					player.width            = player.sprites.run.width;
+				}
+			else if (keys.left.pressed && lastKey === 'left' && player.currentSprite !== player.sprites.run.left)
+				{
+					player.frames           = 1;
+					player.currentSprite    = player.sprites.run.left;
+					player.currentCropWidth = player.sprites.run.cropWidth;
+					player.width            = player.sprites.run.width;
+				}
+			else if (!keys.left.pressed && lastKey === 'left' && player.currentSprite !== player.sprites.stand.left)
+				{
+					player.frames           = 1;
+					player.currentSprite    = player.sprites.stand.left;
+					player.currentCropWidth = player.sprites.stand.cropWidth;
+					player.width            = player.sprites.stand.width;
+				}
+			else if (!keys.right.pressed && lastKey === 'right' && player.currentSprite !== player.sprites.stand.right)
+				{
+					player.frames           = 1;
+					player.currentSprite    = player.sprites.stand.right;
+					player.currentCropWidth = player.sprites.stand.cropWidth;
+					player.width            = player.sprites.stand.width;
 				}
 		}
-	
-	
-	if(keys.right.pressed && lastKey === 'right' && player.currentSprite !== player.sprites.run.right)
-		{
-			player.frames = 1;
-			player.currentSprite    = player.sprites.run.right;
-			player.currentCropWidth = player.sprites.run.cropWidth;
-			player.width            = player.sprites.run.width;
-		}
-	else if(keys.left.pressed && lastKey === 'left' && player.currentSprite !== player.sprites.run.left)
-		{
-			player.frames = 1;
-			player.currentSprite    = player.sprites.run.left;
-			player.currentCropWidth = player.sprites.run.cropWidth;
-			player.width            = player.sprites.run.width;
-		}
-	else if(!keys.left.pressed && lastKey === 'left' && player.currentSprite !== player.sprites.stand.left)
-		{
-			player.frames = 1;
-			player.currentSprite    = player.sprites.stand.left;
-			player.currentCropWidth = player.sprites.stand.cropWidth;
-			player.width            = player.sprites.stand.width;
-		}	else if(!keys.right.pressed && lastKey === 'right' && player.currentSprite !== player.sprites.stand.right)
-		{
-			player.frames = 1;
-			player.currentSprite    = player.sprites.stand.right;
-			player.currentCropWidth = player.sprites.stand.cropWidth;
-			player.width            = player.sprites.stand.width;
-		}
-	
+	// Draw the scrollOffset at the top of the canvas
+	c.fillStyle = 'black';
+	c.font      = '20px Arial';
 	
 	
 	//Win Condition
 	if (scrollOffset > platformImage.width * 5 + 560 - 50)
 		{
+			c.fillText('You Win', (canvas.width - c.measureText('You Win').width) / 2, 30);
 			console.log("You win!");
 		}
+	else{
+		c.fillText('Scroll Offset: ' + scrollOffset, (canvas.width - c.measureText('Scroll Offset: ' + scrollOffset).width) / 2, 30);
+	}
 	
 	//Lose Condition
 	if (player.position.y > canvas.height)
 		{
+			c.fillStyle = 'red';
+			c.font      = '40px Arial';
+			c.fillText('You Lose', (canvas.width - c.measureText('You Lose').width) / 2, canvas.height / 2);
 			console.log("You Lose");
-			init();
+			player.alive = false;
+			setTimeout(init, 500); // Delay of 500 milliseconds (.5 seconds)
 		}
 	
 }
