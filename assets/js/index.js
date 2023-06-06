@@ -36,7 +36,7 @@ let imageAssets = [platformImage, hillsImage, backgroundImage, platformTall, spr
 
 
 //Sounds
-let jumpSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/jump.wav");
+let jumpSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/jumpSound.wav");
 let backgroundMusic = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/8-bit-dream-land-142093.mp3");
 let winSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/winsound.wav");
 let loseSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/loseSound.wav");
