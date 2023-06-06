@@ -49,8 +49,7 @@ Promise.all(imagePromises)
        .then(() =>
              {
 	             // All images have loaded, start the game
-	             init();
-	             animate();
+	             displayMenu();
              })
        .catch(error =>
               {
@@ -60,6 +59,8 @@ Promise.all(imagePromises)
 
 
 let lastKey;
+
+let canStartGame = true;
 
 // Define the gravity constant for the game
 const gravity = .5;
@@ -225,12 +226,20 @@ player.update();
 
 let scrollOffset = 0;
 
+let animationFrameId;
 
 // Define the animate function to update the game state and redraw the canvas
 function animate()
 {
+	// Cancel the previous animation frame request
+	if (animationFrameId)
+		{
+			cancelAnimationFrame(animationFrameId);
+		}
+	
 	// Request the next animation frame
-	requestAnimationFrame(animate);
+	animationFrameId = requestAnimationFrame(animate);
+	
 	// Clear the canvas
 	c.fillStyle = 'white';
 	c.fillRect(0, 0, canvas.width, canvas.height);
@@ -345,7 +354,9 @@ function animate()
 			c.fillStyle = 'Green';
 			c.font      = '40px Arial';
 			c.fillText('You Win', (canvas.width - c.measureText('You Win').width) / 2, canvas.height / 2);
+			c.fillText('Press Enter to Start', (canvas.width - c.measureText('Press Enter to Restart').width) / 2, canvas.height / 2 +100);
 			console.log("You win!");
+			canStartGame = true;
 		}
 	else if(scrollOffset < platformImage.width * 5 + 560 - 50 && player.alive){
 		c.fillText('Scroll Offset: ' + scrollOffset, (canvas.width - c.measureText('Scroll Offset: ' + scrollOffset).width) / 2, 30);
@@ -364,6 +375,18 @@ function animate()
 	
 }
 
+// Define the displayMenu function to draw the menu on the canvas
+function displayMenu()
+{
+	// Clear the canvas
+	c.fillStyle = 'white';
+	c.fillRect(0, 0, canvas.width, canvas.height);
+	
+	// Draw the menu
+	c.fillStyle = 'black';
+	c.font      = '40px Arial';
+	c.fillText('Press Enter to Start', (canvas.width - c.measureText('Press Enter to Start').width) / 2, canvas.height / 2);
+}
 
 window.addEventListener('keydown', (event) =>
 {
@@ -402,3 +425,26 @@ window.addEventListener('keyup', (event) =>
 		}
 });
 
+// Add an event listener for the Enter key
+window.addEventListener('keydown', (event) =>
+{
+	if (event.code === 'Enter' && canStartGame)
+		{
+			// Start the game when the Enter key is pressed
+			init();
+			animate();
+			canStartGame = false;
+		}
+});
+
+// Add an event listener for mouse clicks on the canvas
+canvas.addEventListener('click', () =>
+{
+	// Start the game when the canvas is clicked
+	if (canStartGame)
+		{
+			init();
+			animate();
+			canStartGame = false;
+		}
+});
