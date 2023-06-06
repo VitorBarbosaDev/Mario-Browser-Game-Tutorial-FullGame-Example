@@ -342,10 +342,12 @@ function animate()
 	//Win Condition
 	if (scrollOffset > platformImage.width * 5 + 560 - 50)
 		{
-			c.fillText('You Win', (canvas.width - c.measureText('You Win').width) / 2, 30);
+			c.fillStyle = 'Green';
+			c.font      = '40px Arial';
+			c.fillText('You Win', (canvas.width - c.measureText('You Win').width) / 2, canvas.height / 2);
 			console.log("You win!");
 		}
-	else{
+	else if(scrollOffset < platformImage.width * 5 + 560 - 50 && player.alive){
 		c.fillText('Scroll Offset: ' + scrollOffset, (canvas.width - c.measureText('Scroll Offset: ' + scrollOffset).width) / 2, 30);
 	}
 	
