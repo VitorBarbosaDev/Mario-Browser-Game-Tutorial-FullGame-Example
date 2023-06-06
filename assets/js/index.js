@@ -34,6 +34,15 @@ spriteStandLeft.src  = "/Mario-Browser-Game-Tutorial-FullGame-Example/assets/ima
 // Create an array of all your image assets
 let imageAssets = [platformImage, hillsImage, backgroundImage, platformTall, spriteRunLeft, spriteRunRight, spriteStandRight, spriteStandLeft];
 
+
+//Sounds
+let jumpSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/jump.wav");
+let backgroundMusic = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/8-bit-dream-land-142093.mp3");
+let winSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/win sound 2-1.wav");
+let loseSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/music/TurrentSound.wav");
+backgroundMusic.volume = 0.3;
+backgroundMusic.loop = true;
+
 // Create a promise for each image asset that resolves when the image loads
 let imagePromises = imageAssets.map(image =>
                                     {
@@ -351,6 +360,7 @@ function animate()
 	//Win Condition
 	if (scrollOffset > platformImage.width * 5 + 560 - 50)
 		{
+			winSound.play();
 			c.fillStyle = 'Green';
 			c.font      = '40px Arial';
 			c.fillText('You Win', (canvas.width - c.measureText('You Win').width) / 2, canvas.height / 2);
@@ -370,6 +380,7 @@ function animate()
 			c.fillText('You Lose', (canvas.width - c.measureText('You Lose').width) / 2, canvas.height / 2);
 			console.log("You Lose");
 			player.alive = false;
+			loseSound.play();
 			setTimeout(init, 500); // Delay of 500 milliseconds (.5 seconds)
 		}
 	
@@ -378,6 +389,8 @@ function animate()
 // Define the displayMenu function to draw the menu on the canvas
 function displayMenu()
 {
+	
+	
 	// Clear the canvas
 	c.fillStyle = 'white';
 	c.fillRect(0, 0, canvas.width, canvas.height);
@@ -386,6 +399,8 @@ function displayMenu()
 	c.fillStyle = 'black';
 	c.font      = '40px Arial';
 	c.fillText('Press Enter to Start', (canvas.width - c.measureText('Press Enter to Start').width) / 2, canvas.height / 2);
+	
+	
 }
 
 window.addEventListener('keydown', (event) =>
@@ -394,6 +409,7 @@ window.addEventListener('keydown', (event) =>
 	switch (event.code)
 		{
 			case 'Space':
+				jumpSound.play();
 				player.velocity.y = player.jumpHeight;
 				break;
 			case 'KeyD':
@@ -434,6 +450,8 @@ window.addEventListener('keydown', (event) =>
 			init();
 			animate();
 			canStartGame = false;
+			//Music
+			backgroundMusic.play();
 		}
 });
 
@@ -446,5 +464,7 @@ canvas.addEventListener('click', () =>
 			init();
 			animate();
 			canStartGame = false;
+			//Music
+			backgroundMusic.play();
 		}
 });
