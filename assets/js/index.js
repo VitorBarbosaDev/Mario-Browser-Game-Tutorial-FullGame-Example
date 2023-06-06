@@ -43,6 +43,19 @@ let loseSound = new Audio("/Mario-Browser-Game-Tutorial-FullGame-Example/assets/
 backgroundMusic.volume = 0.3;
 backgroundMusic.loop = true;
 
+// Create an array of all your sound assets
+let soundAssets = [jumpSound, backgroundMusic, winSound, loseSound];
+
+// Create a promise for each sound asset that resolves when the sound loads
+let soundPromises = soundAssets.map(sound =>
+                                    {
+	                                    return new Promise((resolve, reject) =>
+	                                                       {
+		                                                       sound.oncanplaythrough = resolve;
+		                                                       sound.onerror          = reject;
+	                                                       });
+                                    });
+
 // Create a promise for each image asset that resolves when the image loads
 let imagePromises = imageAssets.map(image =>
                                     {
@@ -54,7 +67,7 @@ let imagePromises = imageAssets.map(image =>
                                     });
 
 // Wait for all the image assets to load before starting the game
-Promise.all(imagePromises)
+Promise.all(imagePromises, soundPromises)
        .then(() =>
              {
 	             // All images have loaded, start the game
